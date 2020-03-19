@@ -1,3 +1,5 @@
+        # aliases:
+         # - keycloak.mydomain.com
 version: '3.5'
 
 services:
@@ -5,14 +7,44 @@ services:
     container_name: keycloak
     image: jboss/keycloak:7.0.0
     ports:
-      - 8180:8080
-    env_file:
-      - environment-dev.env
+      - 8080:8080
+    # env_file:
+    #   - environment-dev.env
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: keycloakDB
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_SCHEMA: public
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      PROXY_ADDRESS_FORWARDING: "true"
+      KEYCLOAK_PASSWORD: admin
     networks:
-      - keycloak-network
+        keycloak-network:
+          aliases:
+           - keycloak.mydomain.com
     volumes:
       - ./scripts:/opt/jboss/scripts/
       - ./themes/mytheme/:/opt/jboss/keycloak/themes/mytheme/
+
+  keycloakDB:
+    image: postgres:11.1
+    container_name: keycloak-database
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5431:5432"
+    networks:
+      - keycloak-network
+
+volumes:
+  postgres_data:
+      driver: local
 
 networks:
   keycloak-network:

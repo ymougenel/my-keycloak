@@ -12,6 +12,7 @@ ROLE=$6
 # Add-user-keycloak requires restart
 # /add-user-keycloak.sh -r $REALM -u $USER -p $PASSWORD
 
+# TODO: fix password (currently not set)
 /opt/jboss/keycloak/bin/kcadm.sh create users -r $REALM -s username=$USER -s enabled=true -o --fields id,username
 
 if [ ! -z $ROLE ]; then
